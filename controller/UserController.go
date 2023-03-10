@@ -93,7 +93,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	token, err := helper.CreatToken(User.Id) //fmt.Println("3\n%+v", token)
+	token, err := helper.CreateToken(User.Id) //fmt.Println("3\n%+v", token)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeError, "创建token失败", err))
 		return

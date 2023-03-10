@@ -13,6 +13,5 @@ func init() {
 		&User{},
 		&CarShare{},
 		&Teacher{},
-		&Test{},
 	)
 }
