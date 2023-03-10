@@ -3,7 +3,9 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/fanjindong/go-cache"
 	"github.com/fatih/structs"
+	"time"
 
 	//"fmt"
 	"github.com/Haroxa/Integrated_documentation/common"
@@ -16,6 +18,14 @@ import (
 	"net/http"
 	"strconv"
 )
+
+// 数据检验出错，自定义错误值
+
+func DataError(name string) error {
+	err := errors.New(fmt.Sprintf("填写有误或存在空值"))
+	ca.Set(name, err.Error())
+	return err
+}
 
 // 将 map[string]interface{} 指定 字段 对应的 数值 加一
 // map 和 slice 存储的 是地址，不能直接赋值
@@ -72,12 +82,16 @@ func ScoreDeal(view *string, store *string) error {
 	*store = Store
 	View := fmt.Sprintf("%3.2f", float64(data["score"])/float64(data["sum"]))
 	*view = View
+
+	ca.Set("sum", data["sum"], cache.WithEx(1*time.Minute))
 	return nil
 }
 
 // 对 某字段 的 观看数据 和 存储数据 进行处理
+var TMsg = "TMsg"
 
 func Deal(view *string, store *string, Model map[string]interface{}, order map[int]string, op int) error {
+
 	if *store == "" { // 新添加时初始化
 		temp, err := json.Marshal(Model)
 		if err != nil {
@@ -86,10 +100,16 @@ func Deal(view *string, store *string, Model map[string]interface{}, order map[i
 		*store = string(temp)
 	} //fmt.Println("/n store :", *store)
 	if op == 0 {
+		if Model[*view] == nil {
+			return DataError(TMsg)
+		}
 		if err := DataDeal(view, store, order); err != nil {
 			return err
 		}
 	} else if op == 1 {
+		if score, _ := strconv.Atoi(*view); score < 60 || score > 100 {
+			return DataError(TMsg)
+		}
 		if err := ScoreDeal(view, store); err != nil {
 			return err
 		}
@@ -121,6 +141,8 @@ func TeacherDeal(t *model.Teacher) error {
 	if err != nil {
 		return err
 	}
+	temp, _ := ca.Get("sum")
+	t.Sum = temp.(int)
 	return nil
 }
 
@@ -148,7 +170,12 @@ func AddTeacher(c *gin.Context) {
 	}
 	// 处理多种可能的数据
 	if err = TeacherDeal(Teacher); err != nil {
-		c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeError, "初始化失败", err))
+		msg := "初始化失败"
+		if Msg, _ := ca.Get(TMsg); Msg.(string) != "" {
+			msg = Msg.(string)
+			ca.Del(TMsg) //k, v := ca.Get("msg") //fmt.Printf("%v %v\n", k, v)
+		}
+		c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeError, msg, err))
 		return
 	}
 	// 创建

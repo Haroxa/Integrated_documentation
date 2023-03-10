@@ -15,13 +15,6 @@ const (
 
 var ChinaTime *time.Location
 
-type Gender int
-
-const (
-	Male Gender = iota + 1
-	FeMale
-)
-
 func init() {
 	var err error
 	ChinaTime, err = time.LoadLocation("Asia/Shanghai")

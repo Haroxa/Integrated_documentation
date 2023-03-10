@@ -11,6 +11,8 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"math/rand"
+	"regexp"
+
 	//"strconv"
 	"time"
 
@@ -30,6 +32,15 @@ func Mail(email string) error {
 	return err
 }
 
+var PWFormat = `^[\w]{8,16}$`
+var ULFormat = `^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$`
+
+func Check(format string, data string) bool {
+	re := regexp.MustCompile(format)
+	result := re.MatchString(data) //fmt.Printf("%v\n", result)
+	return result
+}
+
 func Register(c *gin.Context) {
 	userLogin := &model.UserLogin{}                     //  初始化  用户  模型
 	if err := c.ShouldBindJSON(userLogin); err != nil { //   读取  用户 并判断
@@ -37,8 +48,8 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeError, "数据绑定失败", err))
 		return
 	}
-	if userLogin.Email == "" || userLogin.Password == "" {
-		c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeError, "邮箱或密码不能为空", nil))
+	if !Check(ULFormat, userLogin.Email) || !Check(PWFormat, userLogin.Password) {
+		c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeError, "邮箱或密码格式有误或为空", nil))
 		return
 	}
 	User, _ := model.FindUser(userLogin.Email)

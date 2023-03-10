@@ -29,6 +29,13 @@ func AddCarShare(c *gin.Context) {
 	}
 	carshare.Luggage = fmt.Sprintf("箱数:%d,包数:%d", carshare.Box, carshare.Bag)
 	carshare.Userid = Userid
+	mp := structs.Map(carshare)
+	for _, v := range mp {
+		if v == "" {
+			c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeError, "数据不能有空", nil))
+			return
+		}
+	}
 	// 创建
 	if err := model.CreateCarShare(carshare); err != nil {
 		c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeError, "创建失败", err))

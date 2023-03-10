@@ -10,15 +10,16 @@ type Teacher struct {
 	Name      string `json:"name"`
 	Course    string `json:"course"`
 	Callname  string `json:"callname"`
-	Cn        string `json:"cn,omitempty"`
+	Cn        string `json:"-"`
 	Homework  string `json:"homework"`
-	Hw        string `json:"hw,omitempty"`
+	Hw        string `json:"-"`
 	Mark      string `json:"mark"`
-	Mk        string `json:"mk,omitempty"`
+	Mk        string `json:"-"`
 	Finishway string `json:"finishway"`
-	Fw        string `json:"fw,omitempty"`
+	Fw        string `json:"-"`
 	Score     string `json:"score"`
-	Sc        string `json:"sc,omitempty"`
+	Sc        string `json:"-"`
+	Sum       int    `json:"sum"`
 }
 
 var Callname = map[string]interface{}{
