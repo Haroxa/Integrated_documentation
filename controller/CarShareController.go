@@ -188,6 +188,8 @@ func DeleteCarShare(c *gin.Context) {
 	c.JSON(http.StatusOK, helper.ApiReturn(common.CodeSuccess, "删除成功", nil))
 }
 
+// 删除所有
+
 func DeleteAllCarShare(c *gin.Context) {
 	carshares, count, err := model.GetAllCarShare()
 	if err != nil {
