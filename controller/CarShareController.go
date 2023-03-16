@@ -49,11 +49,38 @@ func GetCarShareById(c *gin.Context) {
 		return
 	}
 	if carshare.Id == 0 {
-		c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeError, "用户不存在", nil))
+		c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeError, "订单不存在", nil))
 		return
 	}
 
 	c.JSON(http.StatusOK, helper.ApiReturn(common.CodeSuccess, "获取成功", carshare))
+}
+
+// 获取，通过时间
+
+func GetCarShareByTime(c *gin.Context) {
+	/*
+		year := c.Query("year")
+		month := c.Query("month")
+		day := c.Query("day")
+		hour := c.Query("hour")
+		minute := c.Query("minute")
+
+		time := fmt.Sprintf("%s-%s-%s %s", year, month, day, hour)
+		if minute != "" {
+			time += ":" + minute
+		}
+	*/
+	time := c.Query("time")
+	// 获取
+	carshares, count, err := model.GetCarShareByTime(time)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeError, "获取失败", nil))
+		return
+	} //fmt.Println(carshares, "\n", count) //if count == 0 { //	c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeSuccess, "目前无订单", nil)) //	return //}
+
+	msg := fmt.Sprintf("获取成功,已获取个数为:%d", count)
+	c.JSON(http.StatusOK, helper.ApiReturn(common.CodeSuccess, msg, carshares))
 }
 
 // 获取，通过目的地
@@ -67,7 +94,7 @@ func GetCarShareByDestination(c *gin.Context) {
 		return
 	} //fmt.Println(carshares, "\n", count) //if count == 0 { //	c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeSuccess, "目前无订单", nil)) //	return //}
 
-	msg := fmt.Sprintf("已获取个数为:%d", count)
+	msg := fmt.Sprintf("获取成功,已获取个数为:%d", count)
 	c.JSON(http.StatusOK, helper.ApiReturn(common.CodeSuccess, msg, carshares))
 }
 
@@ -82,7 +109,7 @@ func GetCarShareByUser(c *gin.Context) {
 		return
 	} //if count == 0 { //	c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeSuccess, "目前无订单", nil)) //	return //}
 
-	msg := fmt.Sprintf("已获取个数为:%d", count)
+	msg := fmt.Sprintf("获取成功,已获取个数为:%d", count)
 	c.JSON(http.StatusOK, helper.ApiReturn(common.CodeSuccess, msg, carshares))
 }
 
@@ -95,7 +122,7 @@ func GetAllCarShare(c *gin.Context) {
 		return
 	} //if count == 0 { //	c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeSuccess, "目前无订单", nil)) //	return //}
 
-	msg := fmt.Sprintf("已获取个数为:%d", count)
+	msg := fmt.Sprintf("获取成功,已获取个数为:%d", count)
 	c.JSON(http.StatusOK, helper.ApiReturn(common.CodeSuccess, msg, carshares))
 }
 
@@ -111,7 +138,7 @@ func UpdateCarShare(c *gin.Context) {
 		return
 	}
 	if carshare.Id == 0 {
-		c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeError, "用户不存在", nil))
+		c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeError, "订单不存在", nil))
 		return
 	}
 	// 获取数据
@@ -149,7 +176,7 @@ func DeleteCarShare(c *gin.Context) {
 		return
 	}
 	if carshare.Id == 0 {
-		c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeError, "目前无订单", nil))
+		c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeError, "订单不存在", nil))
 		return
 	}
 	// 删除
@@ -159,4 +186,24 @@ func DeleteCarShare(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, helper.ApiReturn(common.CodeSuccess, "删除成功", nil))
+}
+
+func DeleteAllCarShare(c *gin.Context) {
+	carshares, count, err := model.GetAllCarShare()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeError, "获取失败", err))
+		return
+	}
+	if count == 0 {
+		c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeError, "目前无订单", nil))
+		return
+	}
+	// 删除
+	if err = model.DeleteAllCarShare(carshares); err != nil {
+		c.JSON(http.StatusBadRequest, helper.ApiReturn(common.CodeError, "删除失败", err))
+		return
+	}
+	msg := fmt.Sprintf("删除成功,已删除数为:%d", count)
+
+	c.JSON(http.StatusOK, helper.ApiReturn(common.CodeSuccess, msg, nil))
 }

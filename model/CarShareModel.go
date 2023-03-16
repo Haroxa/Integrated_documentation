@@ -42,6 +42,16 @@ func GetCarShareById(CarShareId int) (CarShare, error) {
 	return sharer, err
 }
 
+func GetCarShareByTime(time string) ([]CarShare, int, error) {
+	sharers := make([]CarShare, 10)
+	var c int64
+	err := db.Where("Begintime LIKE ?", "%"+time+"%").Find(&sharers).Count(&c).Error
+	if err == gorm.ErrRecordNotFound {
+		err = nil
+	}
+	return sharers, int(c), err
+}
+
 func GetCarShareByUser(Userid int) ([]CarShare, int, error) {
 	sharers := make([]CarShare, 10)
 	var c int64
@@ -65,6 +75,12 @@ func GetAllCarShare() ([]CarShare, int, error) {
 }
 
 func DeleteCarShare(sharer CarShare) error {
+	//删除指定用户以及数据库中的删除记录
+	err := db.Unscoped().Delete(&sharer).Error
+	return err
+}
+
+func DeleteAllCarShare(sharer []CarShare) error {
 	//删除指定用户以及数据库中的删除记录
 	err := db.Unscoped().Delete(&sharer).Error
 	return err
