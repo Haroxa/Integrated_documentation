@@ -1,12 +1,12 @@
 package model
 
 import (
-	//"encoding/json"
 	"gorm.io/gorm"
 )
 
 type CarShare struct {
 	Userid      int    `json:"userid" gorm:"userid"`
+	Username    string `json:"username"`
 	Id          int    `json:"id" gorm:"id;primary_key;auto_increment"`
 	Begintime   string `json:"begintime"`
 	Address     string `json:"address"`
