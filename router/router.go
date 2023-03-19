@@ -32,6 +32,16 @@ func Start() {
 			carshare.PUT("/update", controller.UpdateCarShare)
 			carshare.DELETE("/delete", controller.DeleteCarShare)
 			carshare.DELETE("/deleteall", controller.DeleteAllCarShare)
+
+			apply := carshare.Group("apply")
+			{
+				apply.POST("/add", controller.AddApply)
+				apply.GET("/getbyid", controller.GetApplyById)
+				apply.GET("/getbyuser", controller.GetApplyByUser)
+				apply.PUT("/update", controller.UpdateApply)
+				apply.DELETE("/delete", controller.DeleteApply)
+				apply.DELETE("/deleteall", controller.DeleteAllApply)
+			}
 		}
 
 		teacher := user.Group("teacher")
@@ -45,6 +55,10 @@ func Start() {
 	e.GET("/carshare/getall", controller.GetAllCarShare)
 	e.GET("/carshare/getbydestination", controller.GetCarShareByDestination)
 	e.GET("/carshare/getbytime", controller.GetCarShareByTime)
+
+	e.GET("/carshare/apply/getall", controller.GetAllApply)
+	e.GET("/carshare/apply/getbytime", controller.GetApplyByTime)
+	e.GET("/carshare/apply/getbycarshare", controller.GetApplyByCarShare)
 
 	e.GET("/teacher/getall", controller.GetAllTeacher)
 	e.GET("/teacher/getbynameandcourse", controller.GetTeacherByNameAndCourse)

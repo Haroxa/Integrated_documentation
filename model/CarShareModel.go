@@ -13,6 +13,7 @@ type CarShare struct {
 	Destination string `json:"destination"`
 	Num         int    `json:"num"`
 	Maxnum      int    `json:"maxnum"`
+	Pending     int    `json:"pending"`
 	Luggage     string `json:"luggage"`
 	Box         int    `json:"box"`
 	Bag         int    `json:"bag"`

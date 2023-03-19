@@ -12,6 +12,7 @@ func init() {
 	db.AutoMigrate(
 		&User{},
 		&CarShare{},
+		&Apply{},
 		&Teacher{},
 	)
 }
